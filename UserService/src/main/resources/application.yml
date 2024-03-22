@@ -1,0 +1,84 @@
+server:
+  port: 8081
+
+
+spring:
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/userservice
+    username: root
+    password:
+  jpa:
+    hibernate:
+     ddl-auto: update
+    show-sql: true
+
+  application:
+    name: User-Service
+    
+  config:
+    import: configserver:http://localhost:8085
+#this is comment becoz this is common for all services so I have define this in github      
+#eureka:
+#  instance:
+#    prefer-ip-address: true  
+#    
+#client:
+#    fetch-registry: true
+#    register-with-eureka: true
+#    service-url:
+#      defaultZone: http://localhost:8761/eureka
+
+management:
+  health:
+    circuitbreakers:
+      enabled: true    
+  endpoints:
+    web:
+      exposure:
+        include: health  
+        
+  endpoint:
+    health:
+      show-details: always
+            
+resilience4j:
+  circuitbreaker:
+    instances:
+      ratingHotelBreaker:
+        registerHealthIndicator: true
+        eventConsumerBufferSize: 10
+        failureRateThreshold: 50
+        minimum-number-of-calls: 5
+        automatic-transition-from-open-to-half-open-enabled: true
+        wait-duration-in-open-state: 20
+        permitted-number-of-calls-in-half-open-state: 3
+        sliding-window-size: 10
+        sliding-window-type: count-based
+
+          
+  retry:
+    instances:
+      ratingHotelService:
+        max-attempts: 3
+        wait-duration: 5s
+        
+        
+#  ratelimiter:
+#    instances:
+#      userRateLimiter:
+#        limit-refresh-period: 4s
+#        limit-for-period: 3
+#        timeout-duration: 2s
+        
+              
+        
+      
+      
+      
+      
+      
+      
+      
+      
+      
